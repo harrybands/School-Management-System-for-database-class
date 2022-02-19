@@ -23,3 +23,22 @@ CREATE TABLE IF NOT EXISTS students(
  birthdate DATE,
  PRIMARY KEY (student_id)
 );
+create table academics_titles(
+	academic_title_id int auto_increment not null, 
+    title varchar(255) not null,
+	primary key(academic_title_id)
+    );
+create table instructors(
+instructor_id int auto_increment not null, 
+first_name varchar(80) not null,
+last_name varchar(80) not null,
+academic_title_id int,
+primary key(instructor_id),
+foreign key(academic_title_id) references academics_titles(academic_title_id)
+); 
+create table terms(
+term_id int auto_increment not null, 
+name varchar(80) not null,
+primary key(term_id)
+)
+
