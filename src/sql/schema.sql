@@ -90,3 +90,89 @@ else
 end if;
 return grade_point; 
 END $$
+
+-- 1. Calculate the GPA for student given a student_id (use student_id=1)
+
+select s.first_name, 
+s.last_name,
+count(cr.student_id) as number_of_classes,
+sum(convert_to_grade_point(g.letter_grade)) as total_grade_points_earned,
+avg(convert_to_grade_point(g.letter_grade)) as GPA
+from students as s
+join class_registrations as cr on s.student_id = cr.student_id
+join grades as g on cr.grade_id = g.grade_id
+where s.student_id = 1
+group by s.student_id; 
+
+-- 2. Calculate the GPA for each student (across all classes and all terms)
+
+select s.first_name, 
+s.last_name,
+count(cr.student_id) as number_of_classes,
+sum(convert_to_grade_point(g.letter_grade)) as total_grade_points_earned,
+avg(convert_to_grade_point(g.letter_grade)) as GPA
+from students as s
+join class_registrations as cr on s.student_id = cr.student_id
+join grades as g on cr.grade_id = g.grade_id
+-- where s.student_id = 1
+group by s.student_id; 
+
+-- 3. Calculate the avg GPA for each class
+
+select c.code, c.name, 
+count(cr.grade_id) as number_of_grades, 
+sum(convert_to_grade_point(g.letter_grade)) as total_of_grades,
+avg(convert_to_grade_point(g.letter_grade)) as 'AVG GPA'
+from classes as c 
+join class_sections as cs on c.class_id = cs.class_id
+join class_registrations as cr on cr.class_section_id = cs.class_section_id
+join grades as g on cr.grade_id = g.grade_id 
+group by c.class_id;
+
+-- 4. Calculate the avg GPA for each class and term
+
+
+select c.code, c.name, t.name as term,
+count(cr.grade_id) as number_of_grades,
+sum(convert_to_grade_point(g.letter_grade)) as total_of_grades,
+avg(convert_to_grade_point(g.letter_grade)) as 'AVG GPA'
+from class_sections as cs
+left join classes as c on c.class_id = cs.class_id
+left join terms as t on cs.term_id = t.term_id
+left join class_registrations as cr on cs.class_section_id = cr.class_section_id
+left join grades as g on cr.grade_id = g.grade_id
+group by c.code, c.name, t.name
+
+-- 5. List all the classes being taught by an instructor (use instructor_id=1)
+
+SELECT instructors.first_name, instructors.last_name, academic_titles.title, classes.code, classes.name AS class_name, terms.name AS term
+FROM class_sections
+LEFT JOIN classes ON class_sections.class_id = classes.class_id
+LEFT JOIN instructors ON class_sections.instructor_id = instructors.instructor_id
+LEFT JOIN terms ON class_sections.term_id = terms.term_id
+LEFT JOIN academic_titles ON instructors.academic_title_id = academic_titles.academic_title_id
+WHERE class_sections.instructor_id = 1;
+
+-- 6. List all classes with terms & instructor
+
+select c.code, c.name, 
+t.name as term,
+first_name, last_name
+from class_sections as cs
+join classes as c on cs.class_id = cs.instructor_id
+join instructors as i on cs.class_id = i.instructor_id
+join terms as t on cs.term_id = t.term_id
+join academic_titles as att on i.academic_title_id= att.academic_title_id
+
+-- 7. Calculate the remaining space left in a class
+
+select c.code, c.name, t.name as term,
+count(cr.student_id) as enrolled_students,
+c.maximum_students - count(cr.student_id)
+from class_sections as cs
+join classes as c on c.class_id = cs.class_id
+join terms as t on cs.term_id = t.term_id
+join class_registrations as cr on cs.class_section_id = cr.class_section_id
+left join grades as g on cr.grade_id = g.grade_id
+group by c.code, c.name, t.name, c.maximum_students
+
