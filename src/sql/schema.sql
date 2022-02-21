@@ -145,13 +145,16 @@ group by c.code, c.name, t.name
 
 -- 5. List all the classes being taught by an instructor (use instructor_id=1)
 
-SELECT instructors.first_name, instructors.last_name, academic_titles.title, classes.code, classes.name AS class_name, terms.name AS term
-FROM class_sections
-LEFT JOIN classes ON class_sections.class_id = classes.class_id
-LEFT JOIN instructors ON class_sections.instructor_id = instructors.instructor_id
-LEFT JOIN terms ON class_sections.term_id = terms.term_id
-LEFT JOIN academic_titles ON instructors.academic_title_id = academic_titles.academic_title_id
-WHERE class_sections.instructor_id = 1;
+select i.first_name, i.last_name, 
+ati.title, 
+c.code, c.name, 
+t.name as term
+from class_sections as cs
+join classes as c on cs.class_id = c.class_id
+join instructors as i on cs.instructor_id = i.instructor_id
+join terms as t on cs.term_id = t.term_id
+join academic_titles as ati on i.academic_title_id = ati.academic_title_id
+where cs.instructor_id = 1;
 
 -- 6. List all classes with terms & instructor
 
