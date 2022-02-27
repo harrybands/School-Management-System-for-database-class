@@ -119,9 +119,12 @@ public class SchoolManagementSystem {
         Connection connection = null;
         Statement sqlStatement = null;
 
-        try {
-             /* Your logic goes here */
-            throw new SQLException(); // REMOVE THIS (this is just to force it to compile)
+        try {        
+        connection = Database.getDatabaseConnection();
+		sqlStatement = connection.createStatement();
+		String sql = String.format("delete students where id = %s;", studentId);
+        sqlStatement.executeUpdate(sql);
+		connection.close();
         } catch (SQLException sqlException) {
             System.out.println("Failed to delete student");
             System.out.println(sqlException.getMessage());
@@ -146,9 +149,13 @@ public class SchoolManagementSystem {
         Connection connection = null;
         Statement sqlStatement = null;
 
-        try {
-             /* Your logic goes here */
-            throw new SQLException(); // REMOVE THIS (this is just to force it to compile)
+        try {       	
+        	connection = Database.getDatabaseConnection();
+        	sqlStatement = connection.createStatement();
+        	String sql = String.format("INSERT INTO students (first_name, last_name,birthdate) "
+        			+ "VALUES ('%s' , '%s','%s');", firstName, lastName,birthdate);
+        	sqlStatement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            connection.close();
         } catch (SQLException sqlException) {
             System.out.println("Failed to create student");
             System.out.println(sqlException.getMessage());
@@ -174,8 +181,37 @@ public class SchoolManagementSystem {
         Statement sqlStatement = null;
 
         try {
-             /* Your logic goes here */
-            throw new SQLException(); // REMOVE THIS (this is just to force it to compile)
+        	connection = Database.getDatabaseConnection();
+            sqlStatement = connection.createStatement();
+            
+            String sql = "select s.student_id, " + 
+            		"cr.class_section_id," + 
+            		" s.first_name, s.last_name," + 
+            		" c.code, c.name," + 
+            		" t.name as term, g.letter_grade" + 
+            		" from class_registrations as cr " + 
+            		"join class_sections as cs on cr.class_section_id = cs.class_section_id " + 
+            		"join classes as c on cs.class_id = c.class_id " + 
+            		"join grades as g on cr.grade_id= g.grade_id " + 
+            		"join terms as t on cs.term_id= t.term_id " + 
+            		"join students as s on cr.student_id = s.student_id;";
+            		
+            ResultSet resultSet = sqlStatement.executeQuery(sql);
+            while (resultSet.next()) {
+           	 
+           	 String student_id = resultSet.getString("student_id");
+           	 String class_section = resultSet.getString("class_section_id");
+           	 String first_name = resultSet.getString("first_name");
+           	 String last_name = resultSet.getString("last_name");
+           	 String code = resultSet.getString("code");
+           	 String name = resultSet.getString("name");
+           	 String term = resultSet.getString("term");
+           	 String letter_grade = resultSet.getString("letter_grade");
+           	 
+           	 System.out.println(student_id + " | " + class_section + " | " 
+           	 + first_name + " | " + last_name + " | " + code + " | " 
+           			 + name + " | " + term + " | " + letter_grade);
+            }
         } catch (SQLException sqlException) {
             System.out.println("Failed to get class sections");
             System.out.println(sqlException.getMessage());
