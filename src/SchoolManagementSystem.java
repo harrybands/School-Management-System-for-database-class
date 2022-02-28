@@ -17,6 +17,7 @@ public class SchoolManagementSystem {
         Connection connection = null;
         Statement sqlStatement = null;
 
+        System.out.println("First Name | Last Name | Title | Code | Name | Term \n\n");
         try {
         	connection = Database.getDatabaseConnection();
             sqlStatement = connection.createStatement();
@@ -40,7 +41,6 @@ public class SchoolManagementSystem {
            	 String name = resultSet.getString("name");
            	 String term = resultSet.getString("term");
            	 
-           	 System.out.println("First Name | Last Name | Title | Code | Name | Term \n\n");
            	 System.out.println(first_name_instructor + " | " + last_name_instructor + " | " 
            	 + title + " | " + code + " | " + name +" | " + term);
             }
@@ -325,6 +325,8 @@ public class SchoolManagementSystem {
     public static void listAllStudents() {
         Connection connection = null;
         Statement sqlStatement = null;
+        
+        System.out.println("Student ID | First Name | Last Name | Birthdate\n\n");
         
         try {
         	 connection = Database.getDatabaseConnection();
