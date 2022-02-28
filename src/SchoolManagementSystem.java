@@ -40,6 +40,7 @@ public class SchoolManagementSystem {
            	 String name = resultSet.getString("name");
            	 String term = resultSet.getString("term");
            	 
+           	 System.out.println("First Name | Last Name | Title | Code | Name | Term \n\n");
            	 System.out.println(first_name_instructor + " | " + last_name_instructor + " | " 
            	 + title + " | " + code + " | " + name +" | " + term);
             }
@@ -68,7 +69,7 @@ public class SchoolManagementSystem {
         Statement sqlStatement = null;
 
         try {
-             /* Your logic goes here */
+            /* Your logic goes here */
             throw new SQLException(); // REMOVE THIS (this is just to force it to compile)
         } catch (SQLException sqlException) {
             System.out.println("Failed to submit grade");
@@ -124,6 +125,8 @@ public class SchoolManagementSystem {
 		sqlStatement = connection.createStatement();
 		String sql = String.format("delete students where id = %s;", studentId);
         sqlStatement.executeUpdate(sql);
+        
+        System.out.println("Student with id: " + studentId + " was deleted\n");
 		connection.close();
         } catch (SQLException sqlException) {
             System.out.println("Failed to delete student");
@@ -152,10 +155,19 @@ public class SchoolManagementSystem {
         try {       	
         	connection = Database.getDatabaseConnection();
         	sqlStatement = connection.createStatement();
-        	String sql = String.format("INSERT INTO students (first_name, last_name,birthdate) "
+        	String sql = String.format("insert into students (first_name, last_name,birthdate) "
         			+ "VALUES ('%s' , '%s','%s');", firstName, lastName,birthdate);
         	sqlStatement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            connection.close();
+
+            ResultSet resultSet = sqlStatement.executeQuery(sql);
+          	 String student_id = resultSet.getString("student_id");
+        	System.out.println("Student ID | First Name | Last Name | Birthdate\n\n");
+        	System.out.println(student_id +" | " + firstName + " | " + lastName + " | "
+        			+ birthdate + "\n");
+        	
+        	connection.close();
+            
+            
         } catch (SQLException sqlException) {
             System.out.println("Failed to create student");
             System.out.println(sqlException.getMessage());
